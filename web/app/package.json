@@ -1,0 +1,18 @@
+{
+  "name": "web-app",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build-dist": "node --input-type=module -e \"import { cp, mkdir, rm } from 'node:fs/promises'; import { build } from 'esbuild'; await rm('dist', { recursive: true, force: true }); await mkdir('dist', { recursive: true }); await cp('index.html', 'dist/index.html'); await cp('src/style.css', 'dist/styles.css'); await build({ entryPoints: ['src/main.ts'], bundle: true, minify: true, format: 'esm', platform: 'browser', outfile: 'dist/app.js' });\"",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "bencode": "^4.0.0",
+    "buffer": "^6.0.3"
+  },
+  "devDependencies": {
+    "esbuild": "^0.21.5",
+    "vitest": "^2.1.9"
+  }
+}

@@ -1,0 +1,56 @@
+# Python cache and build artifacts
+__pycache__/
+*.py[cod]
+*.pyd
+*.so
+*.egg-info/
+.eggs/
+build/
+dist/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+venv*/
+conda-env*/
+
+# IDE and OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Training data and generated artifacts
+data/
+outputs/
+parsed_dataset*.json
+scrape_files_list_merged.txt
+confidence_distribution.png
+
+# Model binaries and checkpoints
+*.safetensors
+*.bin
+*.pt
+*.pth
+*.ckpt
+*.onnx
+
+# Logs and temporary files
+*.log
+*.out
+*.tmp
+
+# Web build artifacts
+web/app/dist/
+web/app/node_modules/
+node_modules/
+*.tsbuildinfo
+
+# Local scratch scripts
+debug_*.py

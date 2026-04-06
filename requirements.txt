@@ -1,0 +1,18 @@
+# Core numerical stack
+numpy
+
+# Deep learning / NLP
+torch
+pytorch-crf
+transformers
+datasets
+evaluate
+seqeval
+accelerate
+peft
+trl
+sentencepiece
+
+# Evaluation / plotting
+scikit-learn
+matplotlib

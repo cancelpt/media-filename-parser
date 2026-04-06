@@ -1,0 +1,89 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  python-quality:
+    name: Python Quality
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install tooling
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install ruff pylint build pytest
+
+      - name: Install package (editable)
+        run: python -m pip install -e .
+
+      - name: Ruff lint
+        run: python -m ruff check src nlp tests tools media_parser.py interactive_parse.py --output-format=github
+
+      - name: Ruff format check
+        run: python -m ruff format --check src nlp tests tools media_parser.py interactive_parse.py
+
+      - name: Pylint
+        run: python -m pylint src --recursive=y
+
+      - name: Pytest
+        run: python -m pytest -q
+
+      - name: Build package
+        run: python -m build
+
+      - name: Smoke test package import and parse
+        run: |
+          python - <<'PY'
+          from media_filename_parser import parse_filename
+
+          sample = "[CancelWEB][CONAN][1134][WEBRIP][1080P].mkv"
+          result = parse_filename(sample)
+          assert result["parsed"]["group"] == "CancelWEB", result
+          print("smoke-ok")
+          PY
+
+  web-build:
+    name: Web Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Export parser constants for web
+        run: python -m tools.export_parser_constants
+
+      - name: Build web/app/dist
+        run: npm --prefix web/app run build-dist
+
+      - name: Verify web/app/dist artifact
+        run: |
+          test -f web/app/dist/index.html
+          test -f web/app/dist/styles.css
+          test -f web/app/dist/app.js

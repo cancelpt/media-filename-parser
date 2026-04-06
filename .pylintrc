@@ -1,0 +1,25 @@
+[MAIN]
+recursive = yes
+
+[FORMAT]
+max-line-length = 160
+
+[MESSAGES CONTROL]
+disable =
+    missing-module-docstring,
+    missing-function-docstring,
+    missing-class-docstring,
+    too-many-lines,
+    too-many-return-statements,
+    too-many-locals,
+    too-many-branches,
+    too-many-statements,
+    too-many-arguments,
+    too-many-positional-arguments,
+    too-few-public-methods,
+    import-outside-toplevel,
+    duplicate-code,
+    redefined-outer-name,
+    reimported,
+    disallowed-name,
+    wrong-import-order

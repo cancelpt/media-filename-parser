@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Media Filename Parser Demo</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app">
+      <section class="hero">
+        <div class="hero-meta">
+          <a
+            class="github-link"
+            href="https://github.com/cancelpt/media-filename-parser"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Open project repository on GitHub"
+            title="Open project repository on GitHub"
+          >
+            <svg viewBox="0 0 24 24" role="img" aria-hidden="true">
+              <path
+                d="M12 0.5a12 12 0 0 0-3.794 23.385c0.6 0.11 0.82-0.262 0.82-0.582v-2.256c-3.338 0.727-4.04-1.614-4.04-1.614-0.546-1.388-1.333-1.758-1.333-1.758-1.09-0.744 0.083-0.73 0.083-0.73 1.205 0.085 1.838 1.238 1.838 1.238 1.07 1.833 2.807 1.304 3.492 0.997 0.108-0.775 0.42-1.305 0.763-1.605-2.665-0.304-5.467-1.334-5.467-5.936 0-1.312 0.47-2.385 1.237-3.225-0.124-0.304-0.536-1.528 0.117-3.186 0 0 1.008-0.322 3.3 1.232a11.5 11.5 0 0 1 6.006 0c2.29-1.554 3.296-1.232 3.296-1.232 0.656 1.658 0.244 2.882 0.12 3.186 0.77 0.84 1.236 1.913 1.236 3.225 0 4.614-2.807 5.628-5.48 5.927 0.43 0.37 0.814 1.104 0.814 2.225v3.297c0 0.323 0.216 0.698 0.825 0.58A12 12 0 0 0 12 0.5Z"
+              ></path>
+            </svg>
+            <span>GitHub</span>
+          </a>
+        </div>
+        <h1 class="title">Media filename parser</h1>
+        <p class="subtitle">
+          支持多行手动输入，也支持导入 .torrent。界面只处理视频后缀，批量输出每条影视文件的结构化解析结果。
+        </p>
+        <div class="hero-usage">
+          <div class="hero-usage-item">
+            <div class="field-label">手动输入</div>
+            <div class="field-value">每行一个路径，支持 Ctrl/Cmd + Enter 快速解析。</div>
+          </div>
+          <div class="hero-usage-item">
+            <div class="field-label">种子导入</div>
+            <div class="field-value">点击或拖拽 .torrent 到下方卡片，自动筛选视频条目。</div>
+          </div>
+          <div class="hero-usage-item">
+            <div class="field-label">过滤规则</div>
+            <div class="field-value">非视频后缀会被忽略，并在结果区显示提示。</div>
+          </div>
+        </div>
+        <div class="controls">
+          <textarea
+            id="path-input"
+            placeholder="每行一个文件名或路径，例如：&#10;[CancelSub] 卡片戰鬥!! 先導者 overdress 第三季 - 13 [1080P][WEB-DL][AAC AVC].mp4&#10;人生.Life.西影.1984.WEB-DL.1080P.x264.AAC.mp4"
+          ></textarea>
+          <button id="parse-btn" type="button">解析列表</button>
+        </div>
+        <div class="controls">
+          <input
+            id="torrent-input"
+            class="visually-hidden-input"
+            type="file"
+            accept=".torrent,application/x-bittorrent"
+          />
+          <label id="torrent-dropzone" class="torrent-dropzone" for="torrent-input">
+            <span class="dropzone-title">导入 .torrent 文件</span>
+            <span class="dropzone-subtitle">点击选择文件，或直接拖拽到此区域</span>
+          </label>
+        </div>
+        <div id="sample-list" class="chip-list"></div>
+      </section>
+
+      <section class="layout">
+        <article class="panel result-panel">
+          <h2 class="panel-title">解析结果</h2>
+          <p id="source-summary" class="filename">等待输入</p>
+          <p id="ignored-notice" class="subtitle notice-line" hidden></p>
+          <div id="result-toolbar" class="result-toolbar" hidden>
+            <div class="result-toolbar-row">
+              <label class="toolbar-field" for="result-filter">
+                <span class="field-label">文件名过滤</span>
+                <input
+                  id="result-filter"
+                  class="toolbar-input"
+                  type="search"
+                  placeholder="按文件名或路径关键字过滤（不区分大小写）"
+                />
+              </label>
+              <label class="toolbar-field toolbar-field-sm" for="page-size">
+                <span class="field-label">每页条数</span>
+                <select id="page-size" class="toolbar-select">
+                  <option value="20" selected>20</option>
+                  <option value="50">50</option>
+                  <option value="100">100</option>
+                  <option value="all">全部</option>
+                </select>
+              </label>
+            </div>
+            <div class="pagination-row">
+              <p id="page-summary" class="page-summary">共 0 条</p>
+              <div class="pagination-controls">
+                <button id="page-prev" class="pager-btn" type="button">上一页</button>
+                <span id="page-info" class="page-info">第 1 / 1 页</span>
+                <button id="page-next" class="pager-btn" type="button">下一页</button>
+              </div>
+            </div>
+          </div>
+          <p id="empty-state" class="subtitle">暂无结果，请先输入视频文件名或导入 .torrent。</p>
+          <div id="result-table-wrap" class="table-wrap" hidden>
+            <table class="result-table">
+              <thead>
+                <tr>
+                  <th>Source</th>
+                  <th>Path</th>
+                  <th>title</th>
+                  <th>zh_title</th>
+                  <th>Year</th>
+                  <th>S/E</th>
+                  <th>Resolution</th>
+                  <th>Video</th>
+                  <th>Audio</th>
+                  <th>Confidence</th>
+                </tr>
+              </thead>
+              <tbody id="result-table-body"></tbody>
+            </table>
+          </div>
+        </article>
+      </section>
+    </main>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>
