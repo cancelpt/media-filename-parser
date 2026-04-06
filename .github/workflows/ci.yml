@@ -76,6 +76,9 @@ jobs:
         with:
           node-version: "20"
 
+      - name: Install web dependencies
+        run: npm --prefix web/app ci
+
       - name: Export parser constants for web
         run: python -m tools.export_parser_constants
 
