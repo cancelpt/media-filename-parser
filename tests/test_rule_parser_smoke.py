@@ -24,3 +24,10 @@ def test_rule_parser_batch_parses_multiple_rows() -> None:
     assert len(rows) == 2
     assert rows[0]["parsed"]["group"] == "CancelWEB"
     assert rows[1]["parsed"]["season_episode"] == "S02E14"
+
+
+def test_parse_filename_mixed_cjk_title_keeps_numeric_english_prefix() -> None:
+    text = "[首尔之春].12.12.The.Day.2023.HKG.BluRay.1080p.x264.DDP5.1-CancelHD.mkv"
+    result = parse_filename(text)
+    assert result["parsed"]["title"] == "12 12 The Day"
+    assert result["parsed"]["zh_title"] == "首尔之春"

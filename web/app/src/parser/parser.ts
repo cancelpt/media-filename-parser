@@ -452,6 +452,7 @@ function extractTitles(rawText) {
   const words = text.split(/\s+/u);
   const blocks = [];
   let current = [];
+  let pendingNonLatin = [];
 
   for (const w of words) {
     if (RE_HAS_CJK.test(w)) {
@@ -459,10 +460,22 @@ function extractTitles(rawText) {
         blocks.push(current.join(" "));
         current = [];
       }
+      pendingNonLatin = [];
     } else if (RE_HAS_LATIN.test(w)) {
+      if (!current.length && pendingNonLatin.length) {
+        // Keep short numeric/Roman prefixes immediately before an English block.
+        const prefixTokens = pendingNonLatin.filter((tok) => {
+          const cleaned = tok.replace(/^[\[\](){}<>]+|[\[\](){}<>]+$/gu, "");
+          return /^(?:\d{1,4}|[IVXLCDM]{1,8})$/iu.test(cleaned);
+        });
+        current.push(...prefixTokens);
+      }
       current.push(w);
+      pendingNonLatin = [];
     } else if (current.length) {
       current.push(w);
+    } else {
+      pendingNonLatin.push(w);
     }
   }
   if (current.length) blocks.push(current.join(" "));

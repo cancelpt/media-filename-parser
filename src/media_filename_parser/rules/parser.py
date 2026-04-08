@@ -599,18 +599,34 @@ def parse_filename(filepath):
         words = text.split()
         en_blocks = []
         current_en_block = []
+        pending_non_latin = []
 
         for w in words:
             if RE_HAS_CJK.search(w):
                 if current_en_block:
                     en_blocks.append(" ".join(current_en_block))
                     current_en_block = []
+                pending_non_latin = []
             else:
                 if RE_HAS_LATIN.search(w):
+                    if not current_en_block and pending_non_latin:
+                        # Keep short numeric/Roman prefixes immediately before an
+                        # English block (e.g. "12 12 The Day").
+                        prefix_tokens = []
+                        for tok in pending_non_latin:
+                            cleaned = tok.strip("[](){}<>")
+                            if re.fullmatch(
+                                r"(?i)(?:\d{1,4}|[IVXLCDM]{1,8})", cleaned
+                            ):
+                                prefix_tokens.append(tok)
+                        current_en_block.extend(prefix_tokens)
                     current_en_block.append(w)
+                    pending_non_latin = []
                 else:
                     if current_en_block:
                         current_en_block.append(w)
+                    else:
+                        pending_non_latin.append(w)
 
         if current_en_block:
             en_blocks.append(" ".join(current_en_block))
