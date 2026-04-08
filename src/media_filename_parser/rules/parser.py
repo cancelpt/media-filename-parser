@@ -615,9 +615,7 @@ def parse_filename(filepath):
                         prefix_tokens = []
                         for tok in pending_non_latin:
                             cleaned = tok.strip("[](){}<>")
-                            if re.fullmatch(
-                                r"(?i)(?:\d{1,4}|[IVXLCDM]{1,8})", cleaned
-                            ):
+                            if re.fullmatch(r"(?i)(?:\d{1,4}|[IVXLCDM]{1,8})", cleaned):
                                 prefix_tokens.append(tok)
                         current_en_block.extend(prefix_tokens)
                     current_en_block.append(w)
