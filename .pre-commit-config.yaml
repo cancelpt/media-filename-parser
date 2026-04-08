@@ -5,3 +5,10 @@ repos:
       - id: ruff
         args: [--fix]
       - id: ruff-format
+  - repo: local
+    hooks:
+      - id: pylint-src
+        name: pylint src (recursive)
+        entry: python -m pylint src --recursive=y
+        language: system
+        pass_filenames: false

@@ -58,6 +58,48 @@ jobs:
           print("smoke-ok")
           PY
 
+  python-compatibility:
+    name: Python Compatibility (py${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install tooling
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install build pytest
+
+      - name: Install package (editable)
+        run: python -m pip install -e .
+
+      - name: Pytest
+        run: python -m pytest -q
+
+      - name: Build package
+        run: python -m build
+
+      - name: Smoke test package import and parse
+        run: |
+          python - <<'PY'
+          from media_filename_parser import parse_filename
+
+          sample = "[CancelWEB][CONAN][1134][WEBRIP][1080P].mkv"
+          result = parse_filename(sample)
+          assert result["parsed"]["group"] == "CancelWEB", result
+          print("smoke-ok")
+          PY
+
   web-build:
     name: Web Build
     runs-on: ubuntu-latest
