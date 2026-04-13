@@ -47,6 +47,19 @@ print("batch[0]:")
 print(json.dumps(batch[0], ensure_ascii=False, indent=2))
 ```
 
+For application integration (for example `torrent-transfer`), prefer typed payload and
+query-name helper:
+
+```python
+from media_filename_parser import build_query_name, parse_filename_typed
+
+typed = parse_filename_typed("Black.Mirror.S02E03.2011.mkv")
+print(typed.title, typed.year, typed.season_episode)
+
+query_name = build_query_name("Black.Mirror.S02E03.2011.mkv")
+print(query_name)  # Black Mirror.2011.S02
+```
+
 Sample output (excerpt):
 
 ```json
